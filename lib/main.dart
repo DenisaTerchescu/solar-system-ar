@@ -1,5 +1,3 @@
-
-
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,90 +5,80 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 
 void main() {
   runApp(MaterialApp(
-    home: HelloWorld(),
+    home: SolarSystemApp(),
   ));
 }
 
-class HelloWorld extends StatefulWidget {
+class SolarSystemApp extends StatefulWidget {
   @override
-  _HelloWorldState createState() => _HelloWorldState();
+  _SolarSystemAppState createState() => _SolarSystemAppState();
 }
 
-class _HelloWorldState extends State<HelloWorld> {
+class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Solar System AR'),
-        ),
-        body: ArCoreView(
-          onArCoreViewCreated: _onArCoreViewCreated,
-        ),
-      ),
+          appBar: AppBar(
+            title: const Text(
+              'Solar System AR',
+              style: TextStyle(color: Colors.white),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.pink,
+          ),
+          body: ArCoreView(
+            onArCoreViewCreated: _onArCoreViewCreated,
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _showQuizDialog(context);
+            },
+            backgroundColor: Colors.pink,
+            child: const Icon(Icons.quiz_outlined),
+          )),
     );
   }
 
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
-    _addSphere(arCoreController);
-    //_addCylindre(arCoreController);
-   // _addCube(arCoreController);
+    // sun
+    _addPlanet(
+        arCoreController, 1, 'images/sun.jpg', vector.Vector3(-2, 0, -1.5));
+
+    // mercury
+    _addPlanet(
+        arCoreController, 0.1, 'images/mercury.jpg', vector.Vector3(0, 0, -1.5));
+
+    // venus
+    _addPlanet(
+        arCoreController, 0.12, 'images/venus.jpg', vector.Vector3(0.25, 0, -1.5));
+
+    // earth
+    _addPlanet(
+        arCoreController, 0.14, 'images/earth.jpg', vector.Vector3(0.5, 0, -1.5));
+
+    // mars
+    _addPlanet(
+        arCoreController, 0.16, 'images/mars.jpg', vector.Vector3(1, 0, -1.5));
+
   }
 
-  Future<void> _addSphere(ArCoreController controller) async {
-    // final material = ArCoreMaterial(color: Color.fromARGB(120, 66, 134, 244));
+  Future<void> _addPlanet(ArCoreController controller, double radius,
+      String texture, vector.Vector3 position) async {
     final material = ArCoreMaterial(
-        color: Colors.red,
-         textureBytes: await _loadTexture('images/mars.jpg')
-
-
-    );
+        color: Colors.red, textureBytes: await _loadTexture(texture));
     final sphere = ArCoreSphere(
       materials: [material],
-      radius: 0.1,
+      radius: radius,
     );
-
 
     final node = ArCoreNode(
       shape: sphere,
-      position: vector.Vector3(0, 0, -1.5),
-    );
-    controller.addArCoreNode(node);
-  }
-
-  void _addCylindre(ArCoreController controller) {
-    final material = ArCoreMaterial(
-      color: Colors.red,
-      reflectance: 1.0,
-    );
-    final cylindre = ArCoreCylinder(
-      materials: [material],
-      radius: 0.5,
-      height: 0.3,
-    );
-    final node = ArCoreNode(
-      shape: cylindre,
-      position: vector.Vector3(0.0, -0.5, -2.0),
-    );
-    controller.addArCoreNode(node);
-  }
-
-  void _addCube(ArCoreController controller) {
-    final material = ArCoreMaterial(
-      color: Color.fromARGB(120, 66, 134, 244),
-      metallic: 1.0,
-    );
-    final cube = ArCoreCube(
-      materials: [material],
-      size: vector.Vector3(0.5, 0.5, 0.5),
-    );
-    final node = ArCoreNode(
-      shape: cube,
-      position: vector.Vector3(-0.5, 0.5, -3.5),
+      position: position,
     );
     controller.addArCoreNode(node);
   }
@@ -101,10 +89,29 @@ class _HelloWorldState extends State<HelloWorld> {
     super.dispose();
   }
 
-  // Helper function to load the texture as bytes
   Future<Uint8List> _loadTexture(String assetPath) async {
-    // Load the image as bytes from assets
     final byteData = await rootBundle.load(assetPath);
     return byteData.buffer.asUint8List();
   }
+}
+
+void _showQuizDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Time for a quiz!'),
+        content: const Text(
+            'Are you ready to test your knowledge about the solar system?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      );
+    },
+  );
 }
