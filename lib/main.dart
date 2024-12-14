@@ -2,6 +2,7 @@ import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -31,6 +32,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
           ),
           body: ArCoreView(
             onArCoreViewCreated: _onArCoreViewCreated,
+            enableTapRecognizer: true,
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -76,11 +78,31 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       radius: radius,
     );
 
+    var planetName = extractPlanetName(texture);
+
     final node = ArCoreNode(
       shape: sphere,
       position: position,
+      name: planetName
     );
     controller.addArCoreNode(node);
+
+    controller.onNodeTap = (nodes) {
+      // if (nodes.contains(planetName)) {
+        _showToast("You clicked on $planetName!");
+      // }
+    };
+  }
+
+  void _showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.pinkAccent,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 
   @override
@@ -93,6 +115,12 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     final byteData = await rootBundle.load(assetPath);
     return byteData.buffer.asUint8List();
   }
+}
+
+String extractPlanetName(String filePath) {
+  final RegExp regex = RegExp(r'\/([^\/]+)\.');
+  final match = regex.firstMatch(filePath);
+  return match != null ? match.group(1) ?? '' : '';
 }
 
 void _showQuizDialog(BuildContext context) {
