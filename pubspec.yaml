@@ -70,7 +70,7 @@ flutter:
     - images/jupiter.jpg
     - images/saturn.jpg
     - images/uranus.png
-    - images/neptune.png
+    - images/neptune.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

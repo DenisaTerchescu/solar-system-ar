@@ -45,26 +45,41 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
-    // sun
+    // Sun
     _addPlanet(
         arCoreController, 0.5, 'images/sun.jpg', vector.Vector3(-2, 0, -1.5));
 
-    // mercury
+    // Mercury
     _addPlanet(
         arCoreController, 0.1, 'images/mercury.jpg', vector.Vector3(-1.5, 0, -1.5));
 
-    // venus
+    // Venus
     _addPlanet(
         arCoreController, 0.11, 'images/venus.jpg', vector.Vector3(-1, 0, -1.5));
 
-    // earth
+    // Earth
     _addPlanet(
         arCoreController, 0.12, 'images/terra.jpg', vector.Vector3(-0.5, 0, -1.5));
 
-    // mars
+    // Mars
     _addPlanet(
         arCoreController, 0.13, 'images/mars.jpg', vector.Vector3(0, 0, -1.5));
 
+    // Jupiter
+    _addPlanet(
+        arCoreController, 0.27, 'images/jupiter.jpg', vector.Vector3(0.5, 0, -1.5));
+
+    // Saturn
+    _addPlanet(
+        arCoreController, 0.29, 'images/saturn.jpg', vector.Vector3(1.5, 0, -1.5));
+
+    // Uranus
+    _addPlanet(
+        arCoreController, 0.15, 'images/uranus.png', vector.Vector3(2.0, 0, -1.5));
+
+    // Neptune
+    _addPlanet(
+        arCoreController, 0.15, 'images/neptune.jpg', vector.Vector3(2.5, 0, -1.5));
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
