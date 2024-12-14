@@ -47,23 +47,23 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
     // sun
     _addPlanet(
-        arCoreController, 1, 'images/sun.jpg', vector.Vector3(-2, 0, -1.5));
+        arCoreController, 0.5, 'images/sun.jpg', vector.Vector3(-2, 0, -1.5));
 
     // mercury
     _addPlanet(
-        arCoreController, 0.1, 'images/mercury.jpg', vector.Vector3(0, 0, -1.5));
+        arCoreController, 0.1, 'images/mercury.jpg', vector.Vector3(-1.5, 0, -1.5));
 
     // venus
     _addPlanet(
-        arCoreController, 0.12, 'images/venus.jpg', vector.Vector3(0.25, 0, -1.5));
+        arCoreController, 0.11, 'images/venus.jpg', vector.Vector3(-1, 0, -1.5));
 
     // earth
     _addPlanet(
-        arCoreController, 0.14, 'images/earth.jpg', vector.Vector3(0.5, 0, -1.5));
+        arCoreController, 0.12, 'images/terra.jpg', vector.Vector3(-0.5, 0, -1.5));
 
     // mars
     _addPlanet(
-        arCoreController, 0.16, 'images/mars.jpg', vector.Vector3(1, 0, -1.5));
+        arCoreController, 0.13, 'images/mars.jpg', vector.Vector3(0, 0, -1.5));
 
   }
 
@@ -106,7 +106,7 @@ void _showQuizDialog(BuildContext context) {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop();
             },
             child: const Text('Close'),
           ),
