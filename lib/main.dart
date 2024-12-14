@@ -103,7 +103,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     _planetNodes[planetName] = node;
 
     controller.onNodeTap = (nodes) {
-        _showToast("You clicked on $nodes!");
+        _showToast("You tapped on $nodes!");
     };
   }
 
