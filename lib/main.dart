@@ -21,20 +21,20 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
 
   final List<Map<String, dynamic>> planets = [
-    {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5)},
-    {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5)},
-    {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5)},
-    {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5)},
-    {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5)},
-    {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5)},
-    {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5)},
-    {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5)},
-    {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(3.0, 0, -1.5)},
+    {'size': 0.5, 'image': 'images/sun.jpg', 'distance': 0.0}, // Sun at center
+    {'size': 0.1, 'image': 'images/mercury.jpg', 'distance': 0.5}, // Mercury
+    {'size': 0.11, 'image': 'images/venus.jpg', 'distance': 1.0}, // Venus
+    {'size': 0.12, 'image': 'images/terra.jpg', 'distance': 1.5}, // Earth
+    {'size': 0.13, 'image': 'images/mars.jpg', 'distance': 2.0}, // Mars
+    {'size': 0.27, 'image': 'images/jupiter.jpg', 'distance': 2.5}, // Jupiter
+    {'size': 0.29, 'image': 'images/saturn.jpg', 'distance': 3.0}, // Saturn
+    {'size': 0.15, 'image': 'images/uranus.png', 'distance': 3.5}, // Uranus
+    {'size': 0.15, 'image': 'images/neptune.jpg', 'distance': 4.0}, // Neptune
   ];
 
   final Map<String, ArCoreNode> _planetNodes = {};
-
   late Timer _timer;
+  final vector.Vector3 sunPosition = vector.Vector3(-2, 0, -1.5);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         arCoreController,
         planet['size'],
         planet['image'],
-        planet['position'],
+        planet['distance'],
       );
     }
 
@@ -80,7 +80,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
-      String texture, vector.Vector3 position) async {
+      String texture, double distance) async {
     final material = ArCoreMaterial(
         color: Colors.red, textureBytes: await _loadTexture(texture));
     final sphere = ArCoreSphere(
@@ -89,6 +89,9 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     );
 
     var planetName = extractPlanetName(texture);
+
+    final position = sunPosition +
+        vector.Vector3(distance, 0, 0);
 
     final node = ArCoreNode(
       shape: sphere,
