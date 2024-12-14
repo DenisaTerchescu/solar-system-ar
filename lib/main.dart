@@ -45,41 +45,26 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
-    // Sun
-    _addPlanet(
-        arCoreController, 0.5, 'images/sun.jpg', vector.Vector3(-2, 0, -1.5));
+    final List<Map<String, dynamic>> planets = [
+      {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5)},
+      {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5)},
+      {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5)},
+      {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5)},
+      {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5)},
+      {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5)},
+      {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5)},
+      {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5)},
+      {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(3.0, 0, -1.5)},
+    ];
 
-    // Mercury
-    _addPlanet(
-        arCoreController, 0.1, 'images/mercury.jpg', vector.Vector3(-1.5, 0, -1.5));
-
-    // Venus
-    _addPlanet(
-        arCoreController, 0.11, 'images/venus.jpg', vector.Vector3(-1, 0, -1.5));
-
-    // Earth
-    _addPlanet(
-        arCoreController, 0.12, 'images/terra.jpg', vector.Vector3(-0.5, 0, -1.5));
-
-    // Mars
-    _addPlanet(
-        arCoreController, 0.13, 'images/mars.jpg', vector.Vector3(0, 0, -1.5));
-
-    // Jupiter
-    _addPlanet(
-        arCoreController, 0.27, 'images/jupiter.jpg', vector.Vector3(0.5, 0, -1.5));
-
-    // Saturn
-    _addPlanet(
-        arCoreController, 0.29, 'images/saturn.jpg', vector.Vector3(1.5, 0, -1.5));
-
-    // Uranus
-    _addPlanet(
-        arCoreController, 0.15, 'images/uranus.png', vector.Vector3(2.0, 0, -1.5));
-
-    // Neptune
-    _addPlanet(
-        arCoreController, 0.15, 'images/neptune.jpg', vector.Vector3(2.5, 0, -1.5));
+    for (var planet in planets) {
+      _addPlanet(
+        arCoreController,
+        planet['size'],
+        planet['image'],
+        planet['position'],
+      );
+    }
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
