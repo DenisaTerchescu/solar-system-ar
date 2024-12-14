@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
+import 'dart:math';
 
 void main() {
   runApp(MaterialApp(
@@ -17,6 +19,22 @@ class SolarSystemApp extends StatefulWidget {
 
 class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
+
+  final List<Map<String, dynamic>> planets = [
+    {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5)},
+    {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5)},
+    {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5)},
+    {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5)},
+    {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5)},
+    {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5)},
+    {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5)},
+    {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5)},
+    {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(3.0, 0, -1.5)},
+  ];
+
+  final Map<String, ArCoreNode> _planetNodes = {};
+
+  late Timer _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -47,18 +65,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
-    final List<Map<String, dynamic>> planets = [
-      {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5)},
-      {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5)},
-      {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5)},
-      {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5)},
-      {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5)},
-      {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5)},
-      {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5)},
-      {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5)},
-      {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(3.0, 0, -1.5)},
-    ];
-
     for (var planet in planets) {
       _addPlanet(
         arCoreController,
@@ -67,6 +73,10 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         planet['position'],
       );
     }
+
+    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+      // _updatePlanetPositions();
+    });
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
@@ -87,11 +97,26 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     );
     controller.addArCoreNode(node);
 
+    _planetNodes[planetName] = node;
+
     controller.onNodeTap = (nodes) {
-      // if (nodes.contains(planetName)) {
         _showToast("You clicked on $nodes!");
-      // }
     };
+  }
+
+  void _updatePlanetPositions() {
+    final double time = DateTime.now().millisecondsSinceEpoch / 1000.0;
+
+    for (int i = 1; i < planets.length; i++) {
+      final planet = planets[i];
+      final distance = planet['distance'];
+      final speed = 0.5 / distance;
+
+      final double angle = time * speed * 2 * pi;
+      final double x = distance * cos(angle);
+      final double z = distance * sin(angle);
+
+    }
   }
 
   void _showToast(String message) {
@@ -107,6 +132,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   @override
   void dispose() {
+    _timer.cancel();
     arCoreController.dispose();
     super.dispose();
   }
