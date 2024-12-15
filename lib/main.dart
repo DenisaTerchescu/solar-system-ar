@@ -21,19 +21,21 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
 
   final List<Map<String, dynamic>> planets = [
-    {'size': 0.5, 'image': 'images/sun.jpg', 'distance': 0.0, 'name': 'Sun'},
-    {'size': 0.1, 'image': 'images/mercury.jpg', 'distance': 0.5, 'name': 'Mercury'},
-    {'size': 0.11, 'image': 'images/venus.jpg', 'distance': 1.0, 'name': 'Venus'},
-    {'size': 0.12, 'image': 'images/terra.jpg', 'distance': 1.5, 'name': 'Earth'},
-    {'size': 0.13, 'image': 'images/mars.jpg', 'distance': 2.0, 'name': 'Mars'},
-    {'size': 0.27, 'image': 'images/jupiter.jpg', 'distance': 2.5, 'name': 'Jupiter'},
-    {'size': 0.29, 'image': 'images/saturn.jpg', 'distance': 3.25, 'name': 'Saturn'},
-    {'size': 0.15, 'image': 'images/uranus.png', 'distance': 4.0, 'name': 'Uranus'},
-    {'size': 0.15, 'image': 'images/neptune.jpg', 'distance': 4.75, 'name': 'Neptune'},
+    {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5), 'name': 'the Sun'},
+    {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5), 'name': 'Mercury'},
+    {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5), 'name': 'Venus'},
+    {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5), 'name': 'Earth'},
+    {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5), 'name': 'Mars'},
+    {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5), 'name': 'Jupiter'},
+    {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5), 'name': 'Saturn'},
+    {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5), 'name': 'Uranus'},
+    {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(2.75, 0, -1.5), 'name': 'Neptune'},
   ];
+
 
   final Map<String, ArCoreNode> _planetNodes = {};
   late Timer _timer;
+  double _time = 0;
   final vector.Vector3 sunPosition = vector.Vector3(-2, 0, -1.5);
 
   @override
@@ -66,12 +68,13 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
 
+
     for (var planet in planets) {
       _addPlanet(
         arCoreController,
         planet['size'],
         planet['image'],
-        planet['distance'],
+        planet['position'],
         planet['name']
       );
     }
@@ -79,16 +82,13 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
-      String texture, double distance, String name) async {
+      String texture, vector.Vector3 position, String name) async {
     final material = ArCoreMaterial(
         color: Colors.red, textureBytes: await _loadTexture(texture));
     final sphere = ArCoreSphere(
       materials: [material],
       radius: radius,
     );
-
-    final position = sunPosition +
-        vector.Vector3(distance, 0, 0);
 
      final node = ArCoreRotatingNode(
         shape: sphere,
@@ -100,7 +100,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
 
     controller.addArCoreNode(node);
-
 
     _planetNodes['name'] = node;
 
@@ -131,13 +130,9 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     final byteData = await rootBundle.load(assetPath);
     return byteData.buffer.asUint8List();
   }
+
 }
 
-String extractPlanetName(String filePath) {
-  final RegExp regex = RegExp(r'\/([^\/]+)\.');
-  final match = regex.firstMatch(filePath);
-  return match != null ? match.group(1) ?? '' : '';
-}
 
 void _showQuizDialog(BuildContext context) {
   showDialog(
