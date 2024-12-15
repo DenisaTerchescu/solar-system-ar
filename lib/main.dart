@@ -27,9 +27,9 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     {'size': 0.12, 'image': 'images/terra.jpg', 'distance': 1.5, 'name': 'Earth'},
     {'size': 0.13, 'image': 'images/mars.jpg', 'distance': 2.0, 'name': 'Mars'},
     {'size': 0.27, 'image': 'images/jupiter.jpg', 'distance': 2.5, 'name': 'Jupiter'},
-    {'size': 0.29, 'image': 'images/saturn.jpg', 'distance': 3.0, 'name': 'Saturn'},
-    {'size': 0.15, 'image': 'images/uranus.png', 'distance': 3.5, 'name': 'Uranus'},
-    {'size': 0.15, 'image': 'images/neptune.jpg', 'distance': 4.0, 'name': 'Neptune'},
+    {'size': 0.29, 'image': 'images/saturn.jpg', 'distance': 3.25, 'name': 'Saturn'},
+    {'size': 0.15, 'image': 'images/uranus.png', 'distance': 4.0, 'name': 'Uranus'},
+    {'size': 0.15, 'image': 'images/neptune.jpg', 'distance': 4.75, 'name': 'Neptune'},
   ];
 
   final Map<String, ArCoreNode> _planetNodes = {};
@@ -90,7 +90,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     final position = sunPosition +
         vector.Vector3(distance, 0, 0);
 
-     final  node = ArCoreRotatingNode(
+     final node = ArCoreRotatingNode(
         shape: sphere,
         position: position,
         name: name,
@@ -100,6 +100,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
 
     controller.addArCoreNode(node);
+
 
     _planetNodes['name'] = node;
 
