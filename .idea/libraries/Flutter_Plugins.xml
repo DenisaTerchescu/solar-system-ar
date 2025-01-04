@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Flutter Plugins" type="FlutterPluginsLibraryType">
     <CLASSES>
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/arcore_flutter_plugin-0.1.0" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fluttertoast-8.2.10" />
+      <root url="file://$PROJECT_DIR$/arcore_flutter_plugin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

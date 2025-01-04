@@ -1,0 +1,36 @@
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.ArFragment
+import com.google.ar.sceneform.ux.TransformableNode
+
+class ArActivity : AppCompatActivity() {
+
+    private lateinit var arFragment: ArFragment
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_ar)
+
+        arFragment = supportFragmentManager.findFragmentById(R.id.ux_fragment) as ArFragment
+
+        arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
+            val anchor = hitResult.createAnchor()
+            val anchorNode = AnchorNode(anchor)
+            anchorNode.setParent(arFragment.arSceneView.scene)
+
+            ModelRenderable.builder()
+                .setSource(this, R.raw.planet)
+                .build()
+                .thenAccept { renderable ->
+                    val planetNode = TransformableNode(arFragment.transformationSystem)
+                    planetNode.renderable = renderable
+                    planetNode.setParent(anchorNode)
+                    planetNode.scaleController.minScale = 0.5f
+                    planetNode.scaleController.maxScale = 1.5f
+                }
+        }
+    }
+}

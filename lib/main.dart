@@ -32,42 +32,52 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(2.75, 0, -1.5), 'name': 'Neptune'},
   ];
 
-
   final Map<String, ArCoreNode> _planetNodes = {};
   late Timer _timer;
-  double _time = 0;
   final vector.Vector3 sunPosition = vector.Vector3(-2, 0, -1.5);
+  double offset = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start a timer to double the size of the planets every 3 seconds
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      _scalePlanets();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Solar System AR',
-              style: TextStyle(color: Colors.white),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.pink,
+        appBar: AppBar(
+          title: const Text(
+            'Solar System AR',
+            style: TextStyle(color: Colors.white),
           ),
-          body: ArCoreView(
-            onArCoreViewCreated: _onArCoreViewCreated,
-            enableTapRecognizer: true,
-            enableUpdateListener: true,
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _showQuizDialog(context);
-            },
-            backgroundColor: Colors.pink,
-            child: const Icon(Icons.quiz_outlined),
-          )),
+          centerTitle: true,
+          backgroundColor: Colors.pink,
+        ),
+        body: ArCoreView(
+          onArCoreViewCreated: _onArCoreViewCreated,
+          enableTapRecognizer: true,
+          enableUpdateListener: true,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showQuizDialog(context);
+          },
+          backgroundColor: Colors.pink,
+          child: const Icon(Icons.quiz_outlined),
+        ),
+      ),
     );
   }
 
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
-
+    arCoreController.onPlaneTap = _onPlaneTap;
 
     for (var planet in planets) {
       _addPlanet(
@@ -75,37 +85,46 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         planet['size'],
         planet['image'],
         planet['position'],
-        planet['name']
+        planet['name'],
       );
     }
-
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
       String texture, vector.Vector3 position, String name) async {
     final material = ArCoreMaterial(
-        color: Colors.red, textureBytes: await _loadTexture(texture));
+      color: Colors.red,
+      textureBytes: await _loadTexture(texture),
+    );
     final sphere = ArCoreSphere(
       materials: [material],
       radius: radius,
     );
 
-     final node = ArCoreRotatingNode(
-        shape: sphere,
-        position: position,
-        name: name,
-        degreesPerSecond: 30.0,
-        rotation: vector.Vector4(0, 1, 0, 10),
-      );
+    final node = ArCoreNode(
+      shape: sphere,
+      position: position,
+      name: name,
+      // degreesPerSecond: 30.0,
+      rotation: vector.Vector4(0, 1, 0, 10),
+    );
 
+    node.position?.value = vector.Vector3(position.x + offset, position.y + offset, position.z + offset);
 
     controller.addArCoreNode(node);
 
-    _planetNodes['name'] = node;
+    _planetNodes[name] = node;
 
     controller.onNodeTap = (nodes) {
-        _showToast("You tapped on $nodes!");
+      _showToast("You tapped on $nodes!");
     };
+  }
+
+  void _scalePlanets() {
+    setState(() {
+      offset += 2.0;
+      print("Hello, $offset!");
+    });
   }
 
   void _showToast(String message) {
@@ -119,6 +138,10 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     );
   }
 
+  Future<void> _onPlaneTap(List<ArCoreHitTestResult> hits) async {
+   print("Plane tapped!");
+  }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -130,9 +153,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     final byteData = await rootBundle.load(assetPath);
     return byteData.buffer.asUint8List();
   }
-
 }
-
 
 void _showQuizDialog(BuildContext context) {
   showDialog(
@@ -154,3 +175,5 @@ void _showQuizDialog(BuildContext context) {
     },
   );
 }
+
+
