@@ -19,9 +19,10 @@ class SolarSystemApp extends StatefulWidget {
 
 class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
+  // late ArCoreNode node;
 
   final List<Map<String, dynamic>> planets = [
-    {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5), 'name': 'the Sun'},
+    // {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5), 'name': 'the Sun'},
     {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5), 'name': 'Mercury'},
 /*    {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5), 'name': 'Venus'},
     {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5), 'name': 'Earth'},
@@ -32,9 +33,19 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(2.75, 0, -1.5), 'name': 'Neptune'},*/
   ];
 
-  final Map<String, ArCoreNode> _planetNodes = {};
+  late final Map<String, ArCoreNode> _planetNodes = {
+    'Mercury': ArCoreNode(name: 'Mercury'),
+    'Venus': ArCoreNode(name: 'Venus'),
+    'Earth': ArCoreNode(name: 'Earth'),
+    'Mars': ArCoreNode(name: 'Mars'),
+    'Jupiter': ArCoreNode(name: 'Jupiter'),
+    'Saturn': ArCoreNode(name: 'Saturn'),
+    'Uranus': ArCoreNode(name: 'Uranus'),
+    'Neptune': ArCoreNode(name: 'Neptune'),
+  };
+
   late Timer _timer;
-  final vector.Vector3 sunPosition = vector.Vector3(-1.5, 0, -1.5);
+  final vector.Vector3 sunPosition = vector.Vector3(-2.0, 0, -1.5);
   double offset = 0.0;
   double angle = 0.0; // Current angle of rotation for Mercury
   final double mercuryDistance = 1; // Distance of Mercury from the Sun
@@ -47,6 +58,8 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     // Start a timer to double the size of the planets every 3 seconds
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _scalePlanets();
+      offset += 0.5;
+
     });
   }
 
@@ -66,6 +79,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
           onArCoreViewCreated: _onArCoreViewCreated,
           enableTapRecognizer: true,
           enableUpdateListener: true,
+          debug: true,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -80,7 +94,14 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
-    arCoreController.onPlaneTap = _onPlaneTap;
+
+    _addSun(
+      arCoreController,
+      0.5,
+      'images/sun.jpg',
+      sunPosition,
+      "the Sun",
+    );
 
     for (var planet in planets) {
       _addPlanet(
@@ -91,6 +112,34 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         planet['name'],
       );
     }
+  }
+
+  Future<void> _addSun(ArCoreController controller, double radius,
+      String texture, vector.Vector3 position, String name) async {
+
+    final material = ArCoreMaterial(
+      color: Colors.red,
+      textureBytes: await _loadTexture(texture),
+    );
+    final sphere = ArCoreSphere(
+      materials: [material],
+      radius: radius,
+    );
+
+    final node = ArCoreRotatingNode(
+      shape: sphere,
+      position: position,
+      name: name,
+      degreesPerSecond: 30.0,
+      rotation: vector.Vector4(0, 1, 0, 10),
+    );
+
+    controller.addArCoreNode(node);
+
+
+    controller.onNodeTap = (nodes) {
+      _showToast("You tapped on $nodes!");
+    };
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
@@ -104,7 +153,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       radius: radius,
     );
 
-    final node = ArCoreNode(
+     _planetNodes["Mercury"] = ArCoreNode(
       shape: sphere,
       position: position,
       name: name,
@@ -112,42 +161,25 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       rotation: vector.Vector4(0, 1, 0, 10),
     );
 
-
-    controller.addArCoreNode(node);
-
-    _planetNodes[name] = node;
+    controller.addArCoreNode(_planetNodes["Mercury"]!);
 
     controller.onNodeTap = (nodes) {
       _showToast("You tapped on $nodes!");
     };
   }
 
-  void _scalePlanets() async{
-    setState(() async {
-      // Remove the existing Mercury node
-      await arCoreController.removeNode(nodeName: 'Mercury');
+  void _scalePlanets() async {
+    // Increment the angle for Mercury's rotation
+    angle += mercurySpeed;
 
-      // Increment the angle for Mercury's rotation
-      angle += mercurySpeed;
+    // Calculate the new position of Mercury based on its orbit
+    final double x = sunPosition.x + mercuryDistance * cos(angle);
+    final double z = sunPosition.z + mercuryDistance * sin(angle);
 
-      // Calculate the new position of Mercury based on its orbit
-      final double x = sunPosition.x + mercuryDistance * cos(angle);
-      final double z = sunPosition.z + mercuryDistance * sin(angle);
+    final updatedPosition = vector.Vector3(x, 0, z);
 
-      final updatedPosition = vector.Vector3(x, 0, z);
+    _planetNodes['Mercury']?.position?.value = updatedPosition;
 
-      // Add Mercury again at the updated position
-      _addPlanet(
-        arCoreController,
-        0.2, // Mercury's size
-        'images/mercury.jpg',
-        updatedPosition,
-        'Mercury',
-      );
-
-      // Log the updated position for debugging
-      print("Updated Mercury Position: $updatedPosition");
-    });
   }
 
   void _showToast(String message) {
@@ -159,10 +191,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       textColor: Colors.white,
       fontSize: 16.0,
     );
-  }
-
-  Future<void> _onPlaneTap(List<ArCoreHitTestResult> hits) async {
-   print("Plane tapped!");
   }
 
   @override
