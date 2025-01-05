@@ -7,19 +7,20 @@ import 'dart:async';
 import 'dart:math';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: SolarSystemApp(),
   ));
 }
 
 class SolarSystemApp extends StatefulWidget {
+  const SolarSystemApp({super.key});
+
   @override
   _SolarSystemAppState createState() => _SolarSystemAppState();
 }
 
 class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
-  // late ArCoreNode node;
 
   final List<Map<String, dynamic>> planets = [
     // {'size': 0.5, 'image': 'images/sun.jpg', 'position': vector.Vector3(-2, 0, -1.5), 'name': 'the Sun'},
@@ -46,20 +47,17 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   late Timer _timer;
   final vector.Vector3 sunPosition = vector.Vector3(-2.0, 0, -1.5);
-  double offset = 0.0;
-  double angle = 0.0; // Current angle of rotation for Mercury
-  final double mercuryDistance = 1; // Distance of Mercury from the Sun
-  final double mercurySpeed = 0.2; // Speed of Mercury's rotation
+
+  double angle = 0.0;
+  final double mercuryDistance = 1;
+  final double mercurySpeed = 0.2;
 
   @override
   void initState() {
     super.initState();
 
-    // Start a timer to double the size of the planets every 3 seconds
-    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-      _scalePlanets();
-      offset += 0.5;
-
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      _rotatePlanets();
     });
   }
 
@@ -136,7 +134,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
     controller.addArCoreNode(node);
 
-
     controller.onNodeTap = (nodes) {
       _showToast("You tapped on $nodes!");
     };
@@ -153,7 +150,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       radius: radius,
     );
 
-     _planetNodes["Mercury"] = ArCoreRotatingNode(
+     _planetNodes[name] = ArCoreRotatingNode(
       shape: sphere,
       position: position,
       name: name,
@@ -161,14 +158,14 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       rotation: vector.Vector4(0, 1, 0, 10),
     );
 
-    controller.addArCoreNode(_planetNodes["Mercury"]!);
+    controller.addArCoreNode(_planetNodes[name]!);
 
     controller.onNodeTap = (nodes) {
       _showToast("You tapped on $nodes!");
     };
   }
 
-  void _scalePlanets() async {
+  void _rotatePlanets() async {
     // Increment the angle for Mercury's rotation
     angle += mercurySpeed;
 
