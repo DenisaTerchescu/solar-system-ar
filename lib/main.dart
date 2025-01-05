@@ -49,14 +49,14 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   double offset = 0.0;
   double angle = 0.0; // Current angle of rotation for Mercury
   final double mercuryDistance = 1; // Distance of Mercury from the Sun
-  final double mercurySpeed = 0.5; // Speed of Mercury's rotation
+  final double mercurySpeed = 0.2; // Speed of Mercury's rotation
 
   @override
   void initState() {
     super.initState();
 
     // Start a timer to double the size of the planets every 3 seconds
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
       _scalePlanets();
       offset += 0.5;
 
@@ -153,11 +153,11 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       radius: radius,
     );
 
-     _planetNodes["Mercury"] = ArCoreNode(
+     _planetNodes["Mercury"] = ArCoreRotatingNode(
       shape: sphere,
       position: position,
       name: name,
-      // degreesPerSecond: 30.0,
+      degreesPerSecond: 30.0,
       rotation: vector.Vector4(0, 1, 0, 10),
     );
 
