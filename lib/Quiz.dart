@@ -10,6 +10,7 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   int currentQuestionIndex = 0;
   int score = 0;
+  String? selectedOption;
 
   final List<Map<String, dynamic>> questions = [
     {
@@ -23,26 +24,31 @@ class _QuizPageState extends State<QuizPage> {
       'answer': 'Jupiter'
     },
     {
-      'question': 'Which planet is closest to the Sun?',
+      'question': 'Which planet is the closest to the Sun?',
       'options': ['Mercury', 'Venus', 'Earth', 'Mars'],
       'answer': 'Mercury'
     },
   ];
 
   void _checkAnswer(String selectedOption) {
-    if (selectedOption == questions[currentQuestionIndex]['answer']) {
-      setState(() {
-        score++;
-      });
-    }
+    setState(() {
+      this.selectedOption = selectedOption;
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setState(() {
-        currentQuestionIndex++;
-      });
-    } else {
-      _showFinalScoreDialog();
-    }
+      if (selectedOption == questions[currentQuestionIndex]['answer']) {
+        score++;
+      }
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (currentQuestionIndex < questions.length - 1) {
+        setState(() {
+          currentQuestionIndex++;
+          this.selectedOption = null;
+        });
+      } else {
+        _showFinalScoreDialog();
+      }
+    });
   }
 
   void _showFinalScoreDialog() {
@@ -56,7 +62,7 @@ class _QuizPageState extends State<QuizPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Return to the main page
+                Navigator.of(context).pop();
               },
               child: const Text('Close'),
             ),
@@ -73,28 +79,52 @@ class _QuizPageState extends State<QuizPage> {
         title: const Text('Solar System Quiz'),
         backgroundColor: Colors.pink,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Question ${currentQuestionIndex + 1}/${questions.length}:',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              questions[currentQuestionIndex]['question'],
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            ...questions[currentQuestionIndex]['options'].map<Widget>((option) {
-              return ElevatedButton(
-                onPressed: () => _checkAnswer(option),
-                child: Text(option),
-              );
-            }).toList(),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Question ${currentQuestionIndex + 1}/${questions.length}:',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                questions[currentQuestionIndex]['question'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 3,
+                  children: questions[currentQuestionIndex]['options'].map<Widget>((option) {
+                    final bool isCorrect = option == questions[currentQuestionIndex]['answer'];
+                    final bool isSelected = option == selectedOption;
+
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSelected
+                            ? (isCorrect ? Colors.green : Colors.red)
+                            : Colors.pink,
+                        foregroundColor: Colors.white,
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                      onPressed: selectedOption == null
+                          ? () => _checkAnswer(option)
+                          : null,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
