@@ -6,6 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
 import 'dart:math';
 
+import 'Quiz.dart';
+
 void main() {
   runApp(const MaterialApp(
     home: SolarSystemApp(),
@@ -268,14 +270,22 @@ void _showQuizDialog(BuildContext context) {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // Close the dialog
             },
             child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const QuizPage()),
+              );
+            },
+            child: const Text('Okay'),
           ),
         ],
       );
     },
   );
 }
-
-
