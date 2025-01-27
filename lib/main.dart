@@ -96,7 +96,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
 
   late Timer _timer;
-  final vector.Vector3 sunPosition = vector.Vector3(-2.0, 0, -1.5);
+  final vector.Vector3 sunPosition = vector.Vector3(0, 0, -3);
 
   @override
   void initState() {
