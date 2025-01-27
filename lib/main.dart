@@ -28,6 +28,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5), 'name': 'Mercury'},
     {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5), 'name': 'Venus'},
     {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5), 'name': 'Earth'},
+    {'size': 0.05, 'image': 'images/moon.jpg', 'position': vector.Vector3(-0.2, 0, -1.8), 'name': 'Moon'},
     {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5), 'name': 'Mars'},
     {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5), 'name': 'Jupiter'},
     {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5), 'name': 'Saturn'},
@@ -55,6 +56,13 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       'node': ArCoreNode(name: 'Earth'),
       'distance': 2.0,
       'speed': 0.1,
+      'angle': 0.0
+    },
+    {
+      'name': 'Moon',
+      'node': ArCoreNode(name: 'Moon'),
+      'distance': 0.3,
+      'speed': 0.5,
       'angle': 0.0
     },
     {
@@ -218,17 +226,37 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   }
 
   void _rotatePlanets() {
+    final earthNode = _planetNodes.firstWhere((planet) => planet['name'] == 'Earth');
+
+    // Retrieve the position of the Earth node
+    final earthPosition = (earthNode['node'] as ArCoreNode).position?.value ?? vector.Vector3(-0.2, 0, -1.8);
+
+    if (earthPosition != null) {
+      print("Earth's current position: x=${earthPosition.x}, y=${earthPosition.y}, z=${earthPosition.z}");
+    } else {
+      print("Earth's position is not set yet.");
+    }
+
     for (var planet in _planetNodes) {
+   if (planet['name'] != "Moon") {
+     planet['angle'] += planet['speed'];
 
-        planet['angle'] += planet['speed'];
+     final double x = sunPosition.x + planet['distance'] * cos(planet['angle']);
+     final double z = sunPosition.z + planet['distance'] * sin(planet['angle']);
 
-        final double x = sunPosition.x + planet['distance'] * cos(planet['angle']);
-        final double z = sunPosition.z + planet['distance'] * sin(planet['angle']);
+     final updatedPosition = vector.Vector3(x, 0, z);
 
-        final updatedPosition = vector.Vector3(x, 0, z);
+     planet['node'].position?.value = updatedPosition;
+   } else {
+     planet['angle'] += planet['speed'];
 
-        planet['node'].position?.value = updatedPosition;
+     final double x = earthPosition.x + planet['distance'] * cos(planet['angle']);
+     final double z = earthPosition.z + planet['distance'] * sin(planet['angle']);
 
+     final updatedPosition = vector.Vector3(x, 0, z);
+
+     planet['node'].position?.value = updatedPosition;
+   }
       }
 
     }
