@@ -39,6 +39,7 @@ dependencies:
   arcore_flutter_plugin:
     path: ./arcore_flutter_plugin
   fluttertoast: ^8.2.10
+  flutter_3d_controller: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +75,10 @@ flutter:
     - images/uranus.png
     - images/neptune.jpg
     - images/moon.jpg
+    - models/spaceship.obj
+    - spaceship.glb
+    - Cube.FBX
+    - images/stars.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

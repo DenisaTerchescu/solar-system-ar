@@ -23,6 +23,7 @@ class SolarSystemApp extends StatefulWidget {
 
 class _SolarSystemAppState extends State<SolarSystemApp> {
   late ArCoreController arCoreController;
+  late double rotationSpeed;
 
   final List<Map<String, dynamic>> planets = [
     {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5), 'name': 'Mercury'},
@@ -109,6 +110,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   @override
   void initState() {
     super.initState();
+    rotationSpeed = 100.0;
 
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       _rotatePlanets();
@@ -117,29 +119,45 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Solar System AR',
-            style: TextStyle(color: Colors.white),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Solar System AR'),
+        centerTitle: true,
+        backgroundColor: Colors.pink,
+      ),
+      body: Stack(
+        children: [
+          // 🟢 ARCore View
+          Positioned.fill(
+            child: ArCoreView(
+              onArCoreViewCreated: _onArCoreViewCreated,
+              enableTapRecognizer: true,
+              enableUpdateListener: true,
+            ),
           ),
-          centerTitle: true,
-          backgroundColor: Colors.pink,
-        ),
-        body: ArCoreView(
-          onArCoreViewCreated: _onArCoreViewCreated,
-          enableTapRecognizer: true,
-          enableUpdateListener: true,
-          debug: true,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _showQuizDialog(context);
-          },
-          backgroundColor: Colors.pink,
-          child: const Icon(Icons.quiz_outlined),
-        ),
+
+          Positioned(
+            left: 10,
+            top: 100,
+            bottom: 100,
+            child: RotatedBox(
+              quarterTurns: -1, // Rotate the slider vertically
+              child: Slider(
+                value: rotationSpeed,
+                min: 5.0,
+                max: 100.0,
+                divisions: 19,
+                activeColor: Colors.pink,
+                inactiveColor: Colors.pinkAccent,
+                onChanged: (value) {
+                  setState(() {
+                    rotationSpeed = value;
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -227,8 +245,8 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   void _rotatePlanets() {
     final earthNode = _planetNodes.firstWhere((planet) => planet['name'] == 'Earth');
+    double speedFactor = rotationSpeed / 100.0;
 
-    // Retrieve the position of the Earth node
     final earthPosition = (earthNode['node'] as ArCoreNode).position?.value ?? vector.Vector3(-0.2, 0, -1.8);
 
     if (earthPosition != null) {
@@ -239,7 +257,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
     for (var planet in _planetNodes) {
    if (planet['name'] != "Moon") {
-     planet['angle'] += planet['speed'];
+     planet['angle'] += planet['speed'] *  speedFactor;;
 
      final double x = sunPosition.x + planet['distance'] * cos(planet['angle']);
      final double z = sunPosition.z + planet['distance'] * sin(planet['angle']);
@@ -248,7 +266,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
      planet['node'].position?.value = updatedPosition;
    } else {
-     planet['angle'] += planet['speed'];
+     planet['angle'] += planet['speed'] * speedFactor;
 
      final double x = earthPosition.x + planet['distance'] * cos(planet['angle']);
      final double z = earthPosition.z + planet['distance'] * sin(planet['angle']);
