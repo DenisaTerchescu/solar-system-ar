@@ -214,8 +214,36 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
           ),
         ],
       ),
+
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              _showQuizDialog(context);
+            },
+            backgroundColor: Colors.pink,
+            child: const Icon(Icons.quiz, color: Colors.white),
+            heroTag: "quizButton", // Avoids Hero animation conflicts
+          ),
+          const SizedBox(height: 10), // Space between buttons
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QuizPage(),
+              ));
+            },
+            backgroundColor: Colors.blue, // Different color for distinction
+            child: const Icon(Icons.face, color: Colors.white),
+            heroTag: "faceButton", // Unique hero tag
+          ),
+        ],
+      ),
+
     );
   }
+
 
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
