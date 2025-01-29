@@ -26,16 +26,71 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
   late double rotationSpeed;
 
   final List<Map<String, dynamic>> planets = [
-    {'size': 0.1, 'image': 'images/mercury.jpg', 'position': vector.Vector3(-1.5, 0, -1.5), 'name': 'Mercury'},
-    {'size': 0.11, 'image': 'images/venus.jpg', 'position': vector.Vector3(-1, 0, -1.5), 'name': 'Venus'},
-    {'size': 0.12, 'image': 'images/terra.jpg', 'position': vector.Vector3(-0.5, 0, -1.5), 'name': 'Earth'},
-    {'size': 0.05, 'image': 'images/moon.jpg', 'position': vector.Vector3(-0.2, 0, -1.8), 'name': 'Moon'},
-    {'size': 0.13, 'image': 'images/mars.jpg', 'position': vector.Vector3(0, 0, -1.5), 'name': 'Mars'},
-    {'size': 0.27, 'image': 'images/jupiter.jpg', 'position': vector.Vector3(0.5, 0, -1.5), 'name': 'Jupiter'},
-    {'size': 0.29, 'image': 'images/saturn.jpg', 'position': vector.Vector3(1.25, 0, -1.5), 'name': 'Saturn'},
-    {'size': 0.15, 'image': 'images/uranus.png', 'position': vector.Vector3(2.0, 0, -1.5), 'name': 'Uranus'},
-    {'size': 0.15, 'image': 'images/neptune.jpg', 'position': vector.Vector3(2.75, 0, -1.5), 'name': 'Neptune'},
+    {
+      'size': 0.1,
+      'image': 'images/mercury.jpg',
+      'position': vector.Vector3(-1.5, 0, -1.5),
+      'name': 'Mercury',
+      'description': 'Mercury is the smallest planet and closest to the Sun.'
+    },
+    {
+      'size': 0.11,
+      'image': 'images/venus.jpg',
+      'position': vector.Vector3(-1, 0, -1.5),
+      'name': 'Venus',
+      'description': 'Venus is the hottest planet with a thick toxic atmosphere.'
+    },
+    {
+      'size': 0.12,
+      'image': 'images/terra.jpg',
+      'position': vector.Vector3(-0.5, 0, -1.5),
+      'name': 'Earth',
+      'description': 'Earth is the only planet known to support life.'
+    },
+    {
+      'size': 0.05,
+      'image': 'images/moon.jpg',
+      'position': vector.Vector3(-0.2, 0, -1.8),
+      'name': 'Moon',
+      'description': 'The Moon is Earth’s only natural satellite.'
+    },
+    {
+      'size': 0.13,
+      'image': 'images/mars.jpg',
+      'position': vector.Vector3(0, 0, -1.5),
+      'name': 'Mars',
+      'description': 'Mars is known as the Red Planet and may have had water.'
+    },
+    {
+      'size': 0.27,
+      'image': 'images/jupiter.jpg',
+      'position': vector.Vector3(0.5, 0, -1.5),
+      'name': 'Jupiter',
+      'description': 'Jupiter is the largest planet with a massive storm.'
+    },
+    {
+      'size': 0.29,
+      'image': 'images/saturn.jpg',
+      'position': vector.Vector3(1.25, 0, -1.5),
+      'name': 'Saturn',
+      'description': 'Saturn is famous for its stunning rings.'
+    },
+    {
+      'size': 0.15,
+      'image': 'images/uranus.png',
+      'position': vector.Vector3(2.0, 0, -1.5),
+      'name': 'Uranus',
+      'description': 'Uranus is an ice giant that rotates on its side.'
+    },
+    {
+      'size': 0.15,
+      'image': 'images/neptune.jpg',
+      'position': vector.Vector3(2.75, 0, -1.5),
+      'name': 'Neptune',
+      'description': 'Neptune is the windiest planet in the solar system.'
+    },
   ];
+
 
   late final List<Map<String, dynamic>> _planetNodes = [
     {
@@ -170,7 +225,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       0.5,
       'images/sun.jpg',
       sunPosition,
-      "the Sun",
+      "Sun",
     );
 
     for (var planet in planets) {
@@ -206,9 +261,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
     controller.addArCoreNode(node);
 
-    controller.onNodeTap = (nodes) {
-      _showToast("You tapped on $nodes!");
-    };
   }
 
   Future<void> _addPlanet(ArCoreController controller, double radius,
@@ -238,8 +290,18 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         }
       }
 
-    controller.onNodeTap = (nodes) {
-      _showToast("You tapped on $nodes!");
+    controller.onNodeTap = (nodeName) {
+
+      if (nodeName == "Sun"){
+        _showToast("The Sun is the star of our solar system.");
+      } else {
+        var tappedPlanet = planets.firstWhere(
+              (planet) => planet['name'] == nodeName,
+          orElse: () => {'description': 'Unknown celestial object'},
+        );
+
+        _showToast(tappedPlanet['description']);
+      }
     };
   }
 
@@ -249,32 +311,27 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
     final earthPosition = (earthNode['node'] as ArCoreNode).position?.value ?? vector.Vector3(-0.2, 0, -1.8);
 
-    if (earthPosition != null) {
-      print("Earth's current position: x=${earthPosition.x}, y=${earthPosition.y}, z=${earthPosition.z}");
-    } else {
-      print("Earth's position is not set yet.");
-    }
-
     for (var planet in _planetNodes) {
-   if (planet['name'] != "Moon") {
-     planet['angle'] += planet['speed'] *  speedFactor;;
 
-     final double x = sunPosition.x + planet['distance'] * cos(planet['angle']);
-     final double z = sunPosition.z + planet['distance'] * sin(planet['angle']);
+      if (planet['name'] != "Moon") {
+         planet['angle'] += planet['speed'] *  speedFactor;;
 
-     final updatedPosition = vector.Vector3(x, 0, z);
+         final double x = sunPosition.x + planet['distance'] * cos(planet['angle']);
+         final double z = sunPosition.z + planet['distance'] * sin(planet['angle']);
 
-     planet['node'].position?.value = updatedPosition;
-   } else {
-     planet['angle'] += planet['speed'] * speedFactor;
+         final updatedPosition = vector.Vector3(x, 0, z);
 
-     final double x = earthPosition.x + planet['distance'] * cos(planet['angle']);
-     final double z = earthPosition.z + planet['distance'] * sin(planet['angle']);
+         planet['node'].position?.value = updatedPosition;
+       } else {
+         planet['angle'] += planet['speed'] * speedFactor;
 
-     final updatedPosition = vector.Vector3(x, 0, z);
+         final double x = earthPosition.x + planet['distance'] * cos(planet['angle']);
+         final double z = earthPosition.z + planet['distance'] * sin(planet['angle']);
 
-     planet['node'].position?.value = updatedPosition;
-   }
+         final updatedPosition = vector.Vector3(x, 0, z);
+
+         planet['node'].position?.value = updatedPosition;
+       }
       }
 
     }
