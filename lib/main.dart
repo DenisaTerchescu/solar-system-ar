@@ -247,6 +247,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
   void _onArCoreViewCreated(ArCoreController controller) {
     arCoreController = controller;
+    arCoreController.onPlaneTap = _handleOnPlaneTap;
 
     _addSun(
       arCoreController,
@@ -265,6 +266,23 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         planet['name'],
       );
     }
+
+    controller.onNodeTap = (nodeName) {
+
+      if (nodeName == "Sun") {
+        _showToast("The Sun is the star of our solar system.");
+      }
+      else  if (nodeName == "Alien"){
+        onTapHandler(nodeName);
+      } else {
+        var tappedPlanet = planets.firstWhere(
+              (planet) => planet['name'] == nodeName,
+          orElse: () => {'description': 'Unknown celestial object'},
+        );
+
+        _showToast(tappedPlanet['description']);
+      }
+    };
   }
 
   Future<void> _addSun(ArCoreController controller, double radius,
@@ -318,19 +336,6 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
         }
       }
 
-    controller.onNodeTap = (nodeName) {
-
-      if (nodeName == "Sun"){
-        _showToast("The Sun is the star of our solar system.");
-      } else {
-        var tappedPlanet = planets.firstWhere(
-              (planet) => planet['name'] == nodeName,
-          orElse: () => {'description': 'Unknown celestial object'},
-        );
-
-        _showToast(tappedPlanet['description']);
-      }
-    };
   }
 
   void _rotatePlanets() {
@@ -376,6 +381,45 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       fontSize: 16.0,
     );
   }
+
+  void _spawnAlien(ArCoreHitTestResult plane) {
+    final alienNode = ArCoreReferenceNode(
+        name: "Alien",
+        // https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF/Box.gltf
+        objectUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/CesiumMan/glTF/CesiumMan.gltf",
+        position: plane.pose.translation,
+        scale: vector.Vector3(0.8, 0.8, 0.8),
+        rotation: plane.pose.rotation);
+
+    arCoreController.addArCoreNodeWithAnchor(alienNode);
+  }
+
+  void _handleOnPlaneTap(List<ArCoreHitTestResult> hits) {
+    final hit = hits.first;
+    _spawnAlien(hit);
+  }
+
+  void onTapHandler(String name) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Row(
+          children: <Widget>[
+            Text('Remove $name?'),
+            IconButton(
+                icon: Icon(
+                  Icons.delete,
+                ),
+                onPressed: () {
+                  arCoreController.removeNode(nodeName: name);
+                  Navigator.pop(context);
+                })
+          ],
+        ),
+      ),
+    );
+  }
+
 
   @override
   void dispose() {
