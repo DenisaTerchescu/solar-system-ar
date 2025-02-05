@@ -31,63 +31,63 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
       'image': 'images/mercury.jpg',
       'position': vector.Vector3(-1.5, 0, -1.5),
       'name': 'Mercury',
-      'description': 'Mercury is the smallest planet and closest to the Sun.'
+      'description': 'Mercury is the smallest planet and closest to the Sun. It is about 57.9 million kilometers away from the Sun on average.'
     },
     {
       'size': 0.11,
       'image': 'images/venus.jpg',
       'position': vector.Vector3(-1, 0, -1.5),
       'name': 'Venus',
-      'description': 'Venus is the hottest planet with a thick toxic atmosphere.'
+      'description': 'Venus is the second planet from the Sun and the hottest planet in the solar system. It is about 108.2 million kilometers away from the Sun. Venus has a thick, toxic atmosphere made mostly of carbon dioxide, with clouds of sulfuric acid that trap heat, creating an extreme greenhouse effect.'
     },
     {
       'size': 0.12,
       'image': 'images/terra.jpg',
       'position': vector.Vector3(-0.5, 0, -1.5),
       'name': 'Earth',
-      'description': 'Earth is the only planet known to support life.'
+      'description': '"Earth is the third planet from the Sun and the only planet known to support life. It is about 149.6 million kilometers away from the Sun. Earth has a unique atmosphere composed mainly of nitrogen and oxygen, which helps regulate temperature and protect life from harmful solar radiation.'
     },
     {
       'size': 0.05,
       'image': 'images/moon.jpg',
       'position': vector.Vector3(-0.2, 0, -1.8),
       'name': 'Moon',
-      'description': 'The Moon is Earth’s only natural satellite.'
+      'description': '"The Moon is Earth’s only natural satellite and the fifth largest moon in the solar system. It has a rocky, cratered surface shaped by billions of years of asteroid impacts.'
     },
     {
       'size': 0.13,
       'image': 'images/mars.jpg',
       'position': vector.Vector3(0, 0, -1.5),
       'name': 'Mars',
-      'description': 'Mars is known as the Red Planet and may have had water.'
+      'description': 'Mars is the fourth planet from the Sun, located about 227.9 million kilometers away. It is often called the Red Planet because of its reddish appearance, caused by iron oxide (rust) on its surface. Mars has the largest volcano in the solar system, Olympus Mons, and a massive canyon system, Valles Marineris.'
     },
     {
       'size': 0.27,
       'image': 'images/jupiter.jpg',
       'position': vector.Vector3(0.5, 0, -1.5),
       'name': 'Jupiter',
-      'description': 'Jupiter is the largest planet with a massive storm.'
+      'description': 'Jupiter is the fifth planet from the Sun and the largest planet in the solar system. It is about 778.5 million kilometers away from the Sun. Its most famous feature is the Great Red Spot, a massive storm that has been raging for centuries and is larger than Earth'
     },
     {
       'size': 0.29,
       'image': 'images/saturn.jpg',
       'position': vector.Vector3(1.25, 0, -1.5),
       'name': 'Saturn',
-      'description': 'Saturn is famous for its stunning rings.'
+      'description': 'Saturn is the sixth planet from the Sun, located about 1.4 billion kilometers away. It is a gas giant best known for its stunning ring system, which is made of ice, rock, and dust.'
     },
     {
       'size': 0.15,
       'image': 'images/uranus.png',
       'position': vector.Vector3(2.0, 0, -1.5),
       'name': 'Uranus',
-      'description': 'Uranus is an ice giant that rotates on its side.'
+      'description': 'Uranus is the seventh planet from the Sun, located about 2.9 billion kilometers away. What makes Uranus unique is its extreme tilt—it rotates on its side, with its axis tilted at an angle of about 98 degrees'
     },
     {
       'size': 0.15,
       'image': 'images/neptune.jpg',
       'position': vector.Vector3(2.75, 0, -1.5),
       'name': 'Neptune',
-      'description': 'Neptune is the windiest planet in the solar system.'
+      'description': 'Neptune is the eighth and farthest planet from the Sun, located about 4.5 billion kilometers away. It is an ice giant, similar to Uranus, and is known for having the strongest winds in the solar system, reaching speeds of over 2,000 kilometers per hour.'
     },
   ];
 
@@ -270,7 +270,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
     controller.onNodeTap = (nodeName) {
 
       if (nodeName == "Sun") {
-        _showToast("The Sun is the star of our solar system.");
+        _showToast(context, "The Sun is a massive, glowing ball of hot gases at the center of our solar system. It is a star made mostly of hydrogen and helium, and its immense gravity holds the planets in orbit.");
       }
       else  if (nodeName == "Alien"){
         onTapHandler(nodeName);
@@ -280,7 +280,7 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
           orElse: () => {'description': 'Unknown celestial object'},
         );
 
-        _showToast(tappedPlanet['description']);
+        _showToast(context, tappedPlanet['description']);
       }
     };
   }
@@ -371,14 +371,24 @@ class _SolarSystemAppState extends State<SolarSystemApp> {
 
 
 
-  void _showToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.pinkAccent,
-      textColor: Colors.white,
-      fontSize: 16.0,
+  void _showToast(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Get to know more!'),
+          content: Text(
+             message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Got it'),
+            ),
+          ],
+        );
+      },
     );
   }
 

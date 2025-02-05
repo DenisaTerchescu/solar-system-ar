@@ -28,6 +28,41 @@ class _QuizPageState extends State<QuizPage> {
       'options': ['Mercury', 'Venus', 'Earth', 'Mars'],
       'answer': 'Mercury'
     },
+    {
+      'question': 'Which planet has the most rings?',
+      'options': ['Jupiter', 'Saturn', 'Uranus', 'Neptune'],
+      'answer': 'Saturn'
+    },
+    {
+      'question': 'What is the name of Earth’s natural satellite?',
+      'options': ['Moon', 'Phobos', 'Europa', 'Io'],
+      'answer': 'Moon'
+    },
+    {
+      'question': 'Which planet is known for its Great Red Spot?',
+      'options': ['Mars', 'Jupiter', 'Neptune', 'Venus'],
+      'answer': 'Jupiter'
+    },
+    {
+      'question': 'Which planet is tilted on its side and rotates differently from others?',
+      'options': ['Uranus', 'Neptune', 'Saturn', 'Mars'],
+      'answer': 'Uranus'
+    },
+    {
+      'question': 'Which planet is known as the "Morning Star" or "Evening Star"?',
+      'options': ['Mercury', 'Venus', 'Mars', 'Jupiter'],
+      'answer': 'Venus'
+    },
+    {
+      'question': 'Which is the coldest planet in the solar system?',
+      'options': ['Neptune', 'Uranus', 'Saturn', 'Pluto'],
+      'answer': 'Neptune'
+    },
+    {
+      'question': 'What is the name of the dwarf planet in our solar system?',
+      'options': ['Pluto', 'Ceres', 'Eris', 'All of the above'],
+      'answer': 'All of the above'
+    },
   ];
 
   void _checkAnswer(String selectedOption) {
